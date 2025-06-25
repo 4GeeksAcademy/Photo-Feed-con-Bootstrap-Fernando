@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/all.min.css">
+    <style>
+        body{
+            background-color: white;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .vista-activa{
+            color: blue;
+        }
+
+        .img-cuadricula{
+            height: 290px;
+            object-fit: cover;
+        }
+
+        .icono{
+            font-size: 1.7rem;
+            color: grey;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+
+        .icono:hover{
+            color: blue;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar bg-light sticky-top">
+        <div class="container-fluid justify-content-between">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fab fa-instagram text-danger me-2"></i>Instagram
+            </a>
+            <div class="d-flex">
+                <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#modalCrearPost">CrearPost</button>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#">Mi Perfil</a></li>
+                        <li><a class="dropdown-item" href="#">Ajustes</a></li>
+                        <li><a class="dropdown-item text-danger" href="#">Cerrar Sesión</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="text-center mb-3">
+            <button id="boton-cuadricula" class="btn vista-activa"><i class="fas fa-th-large"></i></button>
+            <button id="boton-lista" class="btn"><i class="fas fa-bars"></i></button>
+        </div>
+    <div id="contenedor-fotos" class="row row-cols-1 row-cols-md-3 g-3"></div>
+</div>
+
+<div class="modal fade" id="modalCrearPost" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <textarea class="form-control mb-3" id="campoTexto" rows="3" placeholder="Texto del post"></textarea>
+                <input type="text" class="form-control mb-3" id="campoURL" placeholder="URL de la imagen">
+                <div class="text-center">
+                    <i class="fas fa-camera icono"></i>
+                    <i class="fas fa-map-marker-alt icono"></i>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" id="botonPublicar">Publicar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded', () =>{
+    const fotos =[
+        {titulo: "Cachorros", fecha: "01/01", url: "https://cdn.pixabay.com/photo/2022/06/21/07/50/dogs-7275314-1280.jpg", likes: 1207, descripción: "Mi perro es divertido"},
+        {titulo: "Edificios", fecha: "02/02", url: "https://cdn.pixabay.com/photo/2017/01/18/21/49/singapore-1990959_1280.jpg", likes: 208, descripción: "La gran manzana"},
+        {titulo: "Futbol", fecha: "03/03", url: "https://cdn.pixabay.com/photo/2015/03/13/08/31/football-671358_1280.jpg", likes: 5899, descripción: "Un gran jugador"},
+        {titulo: "Pareja", fecha: "04/04", url: "https://cdn.pixabay.com/photo/2018/01/16/16/47/adult-3086304_1280.jpg", likes: 75, descripción: "Buena pelicula"},
+        {titulo: "Francia", fecha: "05/05", url: "https://cdn.pixabay.com/photo/2020/06/17/19/19/paris-5310783_1280.jpg", likes: 10743, descripción: "La ciudad del amor"},
+        {titulo: "Sonrie", fecha: "06/06", url: "https://cdn.pixabay.com/photo/2017/05/26/00/23/girl-2344795_1280.jpg", likes: 107, descripción: "Se feliz"},
+        {titulo: "Familia", fecha: "07/07", url: "https://cdn.pixabay.com/photo/2021/12/22/06/38/family-6886803_1280.jpg", likes: 432, descripción: "lo mejor del mundo"},
+        {titulo: "Programar", fecha: "08/08", url: "https://cdn.pixabay.com/photo/2016/11/19/14/00/code-1839406_1280.jpg", likes: 100, descripción: "Aprendamos a codificar"},
+        {titulo: "Escuela", fecha: "09/09", url: "https://cdn.pixabay.com/photo/2013/02/09/06/56/school-79612_1280.jpg", likes: 915, descripción: "Un lugar de aprendizaje"},
+        ];
+          
+        const contenedor = document.getElementById('contenedor-fotos');
+        const btnGrid =document.getElementById('boton-cuadricula');
+        const btnList = document.getElementById('boton-lista');
+        const txt = document.getElementById('campoTexto');
+        const url = document.getElementById('campoURL');
+        const btnPub = document.getElementById('botonPublicar');
+
+        function mostrar(cuadricula=true){
+            contenedor.innerHTML="";
+            contenedor.className = cuadricula? "row row-cols-1 row-cols-md-3 g-3":"row";
+            fotos.forEach(f=>{
+                const col = document.createElement('div');
+                col.classList.add('col');
+
+                col.innerHTML = cuadricula? `
+                    <div class="card">
+                        <img src="${f.url}" class="img-fluid img-cuadricula" alt="${f.titulo}">
+                    </div>
+                `:`
+                    <div class="card mb-3">
+                        <div class="card mb-3">
+                            <div class="card-header d-flex justify-content-between">
+                                <span>${f.titulo}</span><small>${f.fecha}</small>
+                            </div>
+                            <img src="${f.url}" class="card-img-top">
+                            <div class="card-body">
+                                <p class="text-muted">${f.likes} Me gusta</p>
+                                <p>${f.descripción}</p>
+                            </div>
+                        </div>
+                    `;
+
+                    contenedor.appendChild(col);
+                });
+            }
+
+            mostrar(true);
+
+            btnGrid.onclick = () => {
+                mostrar(true);
+                btnGrid.classList.add('vista-activa');
+                btnList.classList.remove('vista-activa');
+            };
+
+            btnList.onclick = () => {
+                mostrar(false);
+                btnList.classList.add('vista-activa');
+                btnGrid.classList.remove('vista-activa');
+            };
+
+            btnPub.onclick = () => {
+                if(txt.value && url.value) {
+                    fotos.unshift({
+                        titulo: "Nuevo Post",
+                        fecha: new DAte().toLocalDateString('es-Es',{day: '2-digit', month: '2-digit'}),
+                        url: url.value,
+                        likes: 0,
+                        descripcion: txt.value 
+                    });
+                    mostrar(true);
+                    btnGrid.classList.add('vista-activa');
+                    btnList.classList.remove('vista-activa');
+                    bootstrap.Modal.getInstance(document.getElementByld('modalCrearPost')).hide();
+                    txt.value = "";
+                    url.value = "";
+                }else{
+                    alert("Completa los campos.");
+                }
+            };
+        });
+    </script>
+</body>
+</html>
